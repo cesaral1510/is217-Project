@@ -1,0 +1,83 @@
+<?php
+
+
+
+
+
+
+
+
+
+class CsvSingleton{
+
+	public static function getInstance(){
+        static $finalArray = null;
+        if (null === $finalArray) {
+            $finalArray = new static();
+            $file = fopen("a.csv","r");
+			$headers = fgetcsv($file);
+
+			while(!feof($file)){
+				$data = fgetcsv($file);
+				$ids[] = $data[0]; 
+				$school_array[] = array_combine($headers, $data);
+			}
+			$finalArray = array_combine($ids, $school_array);
+			fclose($file);
+		}
+		return $finalArray;
+    }
+
+
+}
+class PrintSchools{
+
+	public static function printSchool(){
+		$arrayData = CsvSingleton::getInstance();
+		foreach ($arrayData as $key => $value) 
+			echo '<a href="?page='.$key.'">'.$value["INSTNM"].'</a><br>';
+	}
+}
+
+class SchoolInfo{
+
+	public function returnInfo(){
+		$id = $_REQUEST['page'];
+		return CsvSingleton::getInstance()[$id];
+	}
+
+}
+class SchoolInfoFactory{
+	
+	public static function Create(){
+		return new SchoolInfo();
+	}
+
+}
+class Page{
+	public function __construct(){
+		
+		
+		$schoolInfo = SchoolInfoFactory::Create();
+		$school_info_toPrint = $schoolInfo->returnInfo();
+		echo "<table  border='1'style='width:50%'>";
+
+		foreach ($school_info_toPrint as $key => $value) 
+			echo "<tr><td>".$key."</td><td>".$value."</td></tr>";	
+		
+		echo "</table>";
+	}
+
+}
+class PageSchools{
+	public function __construct(){
+	PrintSchools::printSchool();
+}
+
+}
+if(isset($_REQUEST['page']))
+$obj = new Page();
+else
+$obj = new PageSchools();
+
+?>
