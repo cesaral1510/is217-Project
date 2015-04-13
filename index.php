@@ -2,12 +2,6 @@
 
 
 
-
-
-
-
-
-
 class CsvSingleton{
 
 	public static function getInstance(){
@@ -26,7 +20,26 @@ class CsvSingleton{
 			fclose($file);
 		}
 		return $finalArray;
+
+
     }
+    public static function getRealTitle(){
+    	
+        if (null === $finalArrayT) {
+           
+
+            $file = fopen("t.csv","r");
+
+			while(!feof($file)){
+				$data[] = fgets($file);
+				
+			}
+			
+			fclose($file);
+		}
+		return $data;
+    }
+
 
 
 }
@@ -60,18 +73,26 @@ class Page{
 		
 		$schoolInfo = SchoolInfoFactory::Create();
 		$school_info_toPrint = $schoolInfo->returnInfo();
-		echo "<table  border='1'style='width:50%'>";
+		$title = CsvSingleton::getRealTitle();
+		
+		$count = 0;
+		echo "<table  border='1'style='width:75%'>";
 
-		foreach ($school_info_toPrint as $key => $value) 
-			echo "<tr><td>".$key."</td><td>".$value."</td></tr>";	
+		foreach ($school_info_toPrint as $key => $value) {
+			echo "<tr><td>".$title[$count]."</td><td>".$value."</td></tr>";	
+			$count++;
+
+		}
 		
 		echo "</table>";
+		
 	}
 
 }
 class PageSchools{
 	public function __construct(){
 	PrintSchools::printSchool();
+	
 }
 
 }
